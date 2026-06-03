@@ -394,6 +394,39 @@ goals.length;
 
 }
 
+function askAchievement(index){
+
+const achieved =
+confirm(
+"Did you achieve this goal?"
+);
+
+if(achieved){
+
+unlockAchievement(
+goals[index].text
+);
+
+showToast(
+"Goal added to achievements!"
+);
+
+}else{
+
+showToast(
+"Goal marked as not achieved."
+);
+
+}
+
+goals.splice(index,1);
+
+saveGoals();
+
+renderGoals();
+
+}
+
 function addGoal(){
 
 const text =
@@ -548,22 +581,35 @@ localStorage.getItem(
 
 function unlockAchievement(name){
 
-if(
-!achievements.includes(name)
-){
+const achievement = {
 
-achievements.push(name);
+name:name,
+
+date:
+new Date()
+.toLocaleDateString()
+
+};
+
+const exists =
+achievements.some(
+a => a.name === name
+);
+
+if(exists)
+return;
+
+achievements.push(
+achievement
+);
 
 localStorage.setItem(
 "achievements",
 JSON.stringify(
 achievements
-)
-);
+));
 
 renderAchievements();
-
-}
 
 }
 
@@ -584,7 +630,7 @@ container.innerHTML=`
 
 <div class="achievement">
 
-No achievements unlocked yet.
+No achievements unlocked.
 
 </div>
 
@@ -596,11 +642,20 @@ return;
 
 achievements.forEach(item=>{
 
-container.innerHTML+=`
+container.innerHTML += `
 
 <div class="achievement">
 
-🏆 ${item}
+🏆 ${item.name}
+
+<br>
+
+<small>
+
+Achieved on:
+${item.date}
+
+</small>
 
 </div>
 
@@ -609,8 +664,6 @@ container.innerHTML+=`
 });
 
 }
-
-renderAchievements();
 
 // ========================
 // INITIAL LOAD
