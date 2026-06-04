@@ -976,3 +976,84 @@ toast.remove();
 // ========================
 
 updateTimerDisplay();
+
+let xp = parseInt(localStorage.getItem("xp")) || 0;
+let level = parseInt(localStorage.getItem("level")) || 1;
+let streak = parseInt(localStorage.getItem("streak")) || 0;
+
+function addXP(amount) {
+xp += amount;
+
+let newLevel = Math.floor(xp / 100) + 1;
+
+if (newLevel > level) {
+level = newLevel;
+showToast("🏆 Level Up! You are now Level " + level);
+}
+
+localStorage.setItem("xp", xp);
+localStorage.setItem("level", level);
+
+updateUI();
+}
+
+function updateStreak() {
+let last = localStorage.getItem("lastDate");
+let today = new Date().toDateString();
+
+if (last !== today) {
+streak += 1;
+localStorage.setItem("lastDate", today);
+localStorage.setItem("streak", streak);
+}
+
+updateUI();
+}
+
+function updateUI() {
+document.getElementById("xpVal").textContent = xp;
+document.getElementById("levelVal").textContent = level;
+document.getElementById("streakVal").textContent = streak;
+
+updateStreakFlame();
+}
+
+function updateStreakFlame() {
+let el = document.getElementById("flame");
+
+if (streak > 0) {
+el.style.display = "inline-block";
+} else {
+el.style.display = "none";
+}
+}
+
+function completeGoal() {
+addXP(10);
+}
+
+function startFocusSession() {
+addXP(5);
+}
+
+function saveLearning() {
+addXP(15);
+}
+
+let users = [
+{ name: "You", xp: xp },
+{ name: "Alex", xp: 420 },
+{ name: "Sara", xp: 380 }
+];
+
+function renderLeaderboard() {
+users.sort((a,b) => b.xp - a.xp);
+
+let html = "<h2>🏆 Leaderboard</h2>";
+
+users.forEach(u => {
+html += `<p>${u.name} - ${u.xp} XP</p>`;
+});
+
+document.getElementById("leaderboard").innerHTML = html;
+}
